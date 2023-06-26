@@ -62,7 +62,7 @@ export default function TodoList({ session }: { session: Session }) {
     const fetchTodos = async () => {
       const { data: todos, error } = await supabase
         .from('bookings')
-        .select('id,created_at,start_time,end_time,user(id,first_name,last_name), resource(id,name),note')
+        .select('id,created_at,start_time,end_time,user,resource, note')
         .order('id', { ascending: true })
 
       if (error) console.log('error', error)
@@ -73,23 +73,23 @@ export default function TodoList({ session }: { session: Session }) {
     fetchTodos()
   }, [supabase])
 
-  const addTodo = async (taskText: string) => {
-    let task = taskText.trim()
-    if (task.length) {
-      const { data: todo, error } = await supabase
-        .from('bookings')
-        .insert({ task, user_id: user.id })
-        .select()
-        .single()
+  // const addTodo = async (taskText: string) => {
+  //   let task = taskText.trim()
+  //   if (task.length) {
+  //     const { data: todo, error } = await supabase
+  //       .from('bookings')
+  //       .insert({ task, user_id: user.id })
+  //       .select()
+  //       .single()
 
-      if (error) {
-        setErrorText(error.message)
-      } else {
-        setTodos([...todos, todo])
-        setNewTaskText('')
-      }
-    }
-  }
+  //     if (error) {
+  //       setErrorText(error.message)
+  //     } else {
+  //       setTodos([...todos, todo])
+  //       setNewTaskText('')
+  //     }
+  //   }
+  // }
 
   const deleteTodo = async (id: number) => {
     try {
@@ -107,7 +107,7 @@ export default function TodoList({ session }: { session: Session }) {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          addTodo(newTaskText)
+        //  addTodo(newTaskText)
         }}
         className="flex gap-2 my-2"
       >
@@ -139,7 +139,7 @@ export default function TodoList({ session }: { session: Session }) {
 
 const Todo = ({ todo, onDelete }: { todo: Todos; onDelete: () => void }) => {
   const supabase = useSupabaseClient<Database>()
-  const [isCompleted, setIsCompleted] = useState(todo.is_complete)
+  const [isCompleted, setIsCompleted] = useState(/*todo.is_complete*/)
 
   const toggle = async () => {
     try {
@@ -164,9 +164,9 @@ const Todo = ({ todo, onDelete }: { todo: Todos; onDelete: () => void }) => {
         <span className="text-sm leading-5 font-medium truncate"> {Moment(todo.start_time).format('d MMM hh:mm')} </span>
          
         <span className="text-sm leading-5 font-medium truncate"> {Moment(todo.end_time).format('d MMM hh:mm')} </span>
-        <span className="text-sm leading-5 font-medium truncate"> {todo.resource.name} </span>
+        {/* <span className="text-sm leading-5 font-medium truncate"> {todo.resource.name} </span>
         <span className="text-sm leading-5 font-medium truncate"> {todo.user.first_name} </span>
-        <span className="text-sm leading-5 font-medium truncate"> {todo.user.last_name} </span>
+        <span className="text-sm leading-5 font-medium truncate"> {todo.user.last_name} </span> */}
 
  <div className="text-sm leading-5 font-medium truncate">{todo.note}</div>
 
