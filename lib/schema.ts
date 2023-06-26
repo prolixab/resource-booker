@@ -9,7 +9,7 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      Bookings: {
+      bookings: {
         Row: {
           created_at: string | null
           end_time: string
@@ -39,20 +39,45 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "Bookings_resource_fkey"
+            foreignKeyName: "bookings_resource_fkey"
             columns: ["resource"]
-            referencedRelation: "Resources"
+            referencedRelation: "resources"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "Bookings_user_fkey"
+            foreignKeyName: "bookings_user_fkey"
             columns: ["user"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      profiles: {
+        Row: {
+          first_name: string | null
+          id: string
+          last_name: string | null
+        }
+        Insert: {
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+        }
+        Update: {
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]
       }
-      Resources: {
+      resources: {
         Row: {
           created_at: string | null
           description: string | null
@@ -79,14 +104,14 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "Resources_room_fkey"
+            foreignKeyName: "resources_room_fkey"
             columns: ["room"]
-            referencedRelation: "Rooms"
+            referencedRelation: "rooms"
             referencedColumns: ["id"]
           }
         ]
       }
-      Rooms: {
+      rooms: {
         Row: {
           capacity: number | null
           code: string

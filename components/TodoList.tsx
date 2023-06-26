@@ -2,8 +2,53 @@ import { Database } from '@/lib/schema'
 import { Session, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import Moment from 'moment';
+import Datepicker from "tailwind-datepicker-react";
 
-type Todos = Database['public']['Tables']['todos']['Row']
+type Todos = Database['public']['Tables']['bookings']['Row']
+
+const options = {
+	title: "Demo Title",
+	autoHide: true,
+	todayBtn: false,
+	clearBtn: true,
+	maxDate: new Date("2030-01-01"),
+	minDate: new Date("1950-01-01"),
+	theme: {
+		background: "bg-gray-700 dark:bg-gray-800",
+		todayBtn: "",
+		clearBtn: "",
+		icons: "",
+		text: "",
+		disabledText: "bg-red-500",
+		input: "",
+		inputIcon: "",
+		selected: "",
+	},
+	icons: {
+		// () => ReactElement | JSX.Element
+		prev: () => <span>Previous</span>,
+		next: () => <span>Next</span>,
+	},
+	datepickerClassNames: "top-12",
+	defaultDate: new Date("2022-01-01"),
+	language: "en",
+}
+
+const DemoComponent = () => {
+	const [show, setShow] = useState < boolean >(false)
+	const handleChange = (selectedDate: Date) => {
+		console.log(selectedDate)
+	}
+	const handleClose = (state: boolean) => {
+		setShow(state)
+	}
+
+	return (
+		<div>
+			<Datepicker options={options} onChange={handleChange} show={show} setShow={handleClose} />
+		</div>
+	)
+}
 
 export default function TodoList({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>()
@@ -17,7 +62,7 @@ export default function TodoList({ session }: { session: Session }) {
     const fetchTodos = async () => {
       const { data: todos, error } = await supabase
         .from('bookings')
-        .select('id,start_time,end_time,user(id,first_name,last_name), resource(id,name),note')
+        .select('id,created_at,start_time,end_time,user(id,first_name,last_name), resource(id,name),note')
         .order('id', { ascending: true })
 
       if (error) console.log('error', error)
@@ -32,7 +77,7 @@ export default function TodoList({ session }: { session: Session }) {
     let task = taskText.trim()
     if (task.length) {
       const { data: todo, error } = await supabase
-        .from('todos')
+        .from('bookings')
         .insert({ task, user_id: user.id })
         .select()
         .single()
@@ -58,6 +103,7 @@ export default function TodoList({ session }: { session: Session }) {
   return (
     <div className="w-full">
       <h1 className="mb-12">Bookings.</h1>
+      <DemoComponent/>
       <form
         onSubmit={(e) => {
           e.preventDefault()
