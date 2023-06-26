@@ -1,6 +1,7 @@
 import { Database } from '@/lib/schema'
 import { Session, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
+import Moment from 'moment';
 
 type Todos = Database['public']['Tables']['todos']['Row']
 
@@ -15,12 +16,13 @@ export default function TodoList({ session }: { session: Session }) {
   useEffect(() => {
     const fetchTodos = async () => {
       const { data: todos, error } = await supabase
-        .from('todos')
-        .select('*')
+        .from('bookings')
+        .select('id,start_time,end_time,user(id,first_name,last_name), resource(id,name),note')
         .order('id', { ascending: true })
 
       if (error) console.log('error', error)
-      else setTodos(todos)
+      else {console.log(todos);
+      setTodos(todos)}
     }
 
     fetchTodos()
@@ -46,7 +48,7 @@ export default function TodoList({ session }: { session: Session }) {
 
   const deleteTodo = async (id: number) => {
     try {
-      await supabase.from('todos').delete().eq('id', id).throwOnError()
+      await supabase.from('bookings').delete().eq('id', id).throwOnError()
       setTodos(todos.filter((x) => x.id != id))
     } catch (error) {
       console.log('error', error)
@@ -55,7 +57,7 @@ export default function TodoList({ session }: { session: Session }) {
 
   return (
     <div className="w-full">
-      <h1 className="mb-12">Todo List.</h1>
+      <h1 className="mb-12">Bookings.</h1>
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -113,7 +115,16 @@ const Todo = ({ todo, onDelete }: { todo: Todos; onDelete: () => void }) => {
     <li className="w-full block cursor-pointer hover:bg-gray-200 focus:outline-none focus:bg-gray-200 transition duration-150 ease-in-out">
       <div className="flex items-center px-4 py-4 sm:px-6">
         <div className="min-w-0 flex-1 flex items-center">
-          <div className="text-sm leading-5 font-medium truncate">{todo.task}</div>
+        <span className="text-sm leading-5 font-medium truncate"> {Moment(todo.start_time).format('d MMM hh:mm')} </span>
+         
+        <span className="text-sm leading-5 font-medium truncate"> {Moment(todo.end_time).format('d MMM hh:mm')} </span>
+        <span className="text-sm leading-5 font-medium truncate"> {todo.resource.name} </span>
+        <span className="text-sm leading-5 font-medium truncate"> {todo.user.first_name} </span>
+        <span className="text-sm leading-5 font-medium truncate"> {todo.user.last_name} </span>
+
+ <div className="text-sm leading-5 font-medium truncate">{todo.note}</div>
+
+
         </div>
         <div>
           <input
