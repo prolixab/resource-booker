@@ -2,9 +2,6 @@ import { Database } from '@/lib/schema'
 import { Session, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import Moment from 'moment';
-import Datepicker from "tailwind-datepicker-react";
-import DateTimePicker from 'react-tailwindcss-datetimepicker';
-import DateCalendar from "@/components/DateCalendar";
 import Booking from '@/components/Booking'
 import ResourceDropDown from './ResourceDropdown';
 
@@ -22,7 +19,7 @@ user:{
 }
 }
 
-export default function TodoList({ session }: { session: Session }) {
+export default function ViewAll({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>()
   const [todos, setTodos] = useState<AltTodo[]>([])
   const [startDate, setStartDate] = useState([])
@@ -53,23 +50,6 @@ export default function TodoList({ session }: { session: Session }) {
     fetchBookings()
   }, [supabase])
 
-  const addBooking = async (taskText: string) => {
-    let task = taskText.trim()
-    if (task.length) {
-      const { data: todo, error } = await supabase
-        .from('bookings')
-        .insert({ start_time:startDate, end_time:endDate, resource:1, note: task, user: user.id })
-        .select()
-        .single()
-
-      if (error) {
-        setErrorText(error.message)
-      } else {
-        setBookings([...bookings, todo])
-        setNewTaskText('')
-      }
-    }
-  }
 
   const deleteBooking = async (id: number) => {
     try {
@@ -83,31 +63,6 @@ export default function TodoList({ session }: { session: Session }) {
   return (
     <div className="w-full">
       <h1 className="mb-12">Bookings.</h1>
-      <DateCalendar setterFunction={setStartDate}/>
-      <DateCalendar setterFunction={setEndDate}/>
-    <ResourceDropDown session={session} setSelectedResourceId={setSelectedResourceId}/>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          addBooking(newTaskText)
-        }}
-        className="flex gap-2 my-2"
-      >
-        <input
-          className="rounded w-full p-2"
-          type="text"
-          placeholder="make coffee"
-          value={newTaskText}
-          onChange={(e) => {
-            setErrorText('')
-            setNewTaskText(e.target.value)
-          }}
-        />
-        <button className="btn-black" type="submit">
-          Add
-        </button>
-      </form>
-      {!!errorText && <Alert text={errorText} />}
       <div className="bg-white shadow overflow-hidden rounded-md">
         <ul>
           {bookings.map((booking) => (

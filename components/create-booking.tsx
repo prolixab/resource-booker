@@ -22,7 +22,7 @@ user:{
 }
 }
 
-export default function TodoList({ session }: { session: Session }) {
+export default function CreateBooking({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>()
   const [todos, setTodos] = useState<AltTodo[]>([])
   const [startDate, setStartDate] = useState([])
@@ -82,7 +82,7 @@ export default function TodoList({ session }: { session: Session }) {
 
   return (
     <div className="w-full">
-      <h1 className="mb-12">Bookings.</h1>
+      <h1 className="mb-12">Create Booking</h1>
       <DateCalendar setterFunction={setStartDate}/>
       <DateCalendar setterFunction={setEndDate}/>
     <ResourceDropDown session={session} setSelectedResourceId={setSelectedResourceId}/>
@@ -108,13 +108,6 @@ export default function TodoList({ session }: { session: Session }) {
         </button>
       </form>
       {!!errorText && <Alert text={errorText} />}
-      <div className="bg-white shadow overflow-hidden rounded-md">
-        <ul>
-          {bookings.map((booking) => (
-            <Booking key={booking.id} booking={booking} onDelete={() => deleteBooking(booking.id)} />
-          ))}
-        </ul>
-      </div>
     </div>
   )
 }

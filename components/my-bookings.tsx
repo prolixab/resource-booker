@@ -22,7 +22,7 @@ user:{
 }
 }
 
-export default function TodoList({ session }: { session: Session }) {
+export default function MyBookings({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>()
   const [todos, setTodos] = useState<AltTodo[]>([])
   const [startDate, setStartDate] = useState([])
@@ -37,9 +37,11 @@ export default function TodoList({ session }: { session: Session }) {
   useEffect(() => {
 
     const fetchBookings = async () => {
+      console.log(user)
       const { data: bookings, error } = await supabase
         .from('bookings')
         .select('id,created_at,start_time,end_time,user(*),resource(*), note')
+        .eq('user.id', user.id)
         .order('id', { ascending: true })
 
       if (error) console.log('error', error)
@@ -82,31 +84,7 @@ export default function TodoList({ session }: { session: Session }) {
 
   return (
     <div className="w-full">
-      <h1 className="mb-12">Bookings.</h1>
-      <DateCalendar setterFunction={setStartDate}/>
-      <DateCalendar setterFunction={setEndDate}/>
-    <ResourceDropDown session={session} setSelectedResourceId={setSelectedResourceId}/>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          addBooking(newTaskText)
-        }}
-        className="flex gap-2 my-2"
-      >
-        <input
-          className="rounded w-full p-2"
-          type="text"
-          placeholder="make coffee"
-          value={newTaskText}
-          onChange={(e) => {
-            setErrorText('')
-            setNewTaskText(e.target.value)
-          }}
-        />
-        <button className="btn-black" type="submit">
-          Add
-        </button>
-      </form>
+      <h1 className="mb-12">My Bookings</h1>
       {!!errorText && <Alert text={errorText} />}
       <div className="bg-white shadow overflow-hidden rounded-md">
         <ul>

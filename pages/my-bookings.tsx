@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import TodoList from '@/components/TodoList'
+import MyBookings from '@/components/my-bookings'
 import Login from '@/components/login'
 
 export default function Home() {
@@ -25,7 +25,7 @@ export default function Home() {
             style={{ minWidth: 250, maxWidth: 600, margin: 'auto' }}
           >
             
-            <TodoList session={session} />
+            <MyBookings session={session} />
             <button
               className="btn-black w-full mt-12"
               onClick={async () => {
