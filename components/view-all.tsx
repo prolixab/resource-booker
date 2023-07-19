@@ -28,27 +28,59 @@ export default function ViewAll({ session }: { session: Session }) {
   const [bookings, setBookings] = useState<AltTodo[]>([])
   const [newTaskText, setNewTaskText] = useState('')
   const [errorText, setErrorText] = useState('')
+  const [view,setView] = useState('day')
 
   const user = session.user
 
   useEffect(() => {
-
-    const fetchBookings = async () => {
-      const { data: bookings, error } = await supabase
-        .from('bookings')
-        .select('id,created_at,start_time,end_time,user(*),resource(*), note')
-        .order('id', { ascending: true })
-
-      if (error) console.log('error', error)
-      else {console.log(bookings);
-
-       type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>> 
-        setBookings(bookings)
-      }
-    }
-
     fetchBookings()
-  }, [supabase])
+  }, [supabase,view])
+
+  const fetchBookings = async () => {
+
+    let startTime;
+    let endTime;
+    switch(view){
+      case 'day':
+        console.log('day');
+        startTime= Moment().startOf('day').format('YYYY/MM/DD HH:mm:ss').toString();
+        endTime = Moment().endOf('day').format('YYYY/MM/DD HH:mm:ss').toString();
+        break;
+      case 'week':
+        console.log('week');
+        startTime= Moment().startOf('week').format('YYYY/MM/DD HH:mm:ss').toString();
+        endTime = Moment().endOf('week').format('YYYY/MM/DD HH:mm:ss').toString();
+        break;
+      case 'month':
+        console.log('month');
+        startTime= Moment().startOf('month').format('YYYY/MM/DD HH:mm:ss').toString();
+        endTime = Moment().endOf('month').format('YYYY/MM/DD HH:mm:ss').toString();
+        break;
+      default:
+    }
+    
+    let thisMorning= Moment().startOf('day').format('YYYY/MM/DD HH:mm:ss').toString();
+    //thisMorning=thisMorning+"-00"
+    console.log(thisMorning);
+
+    let tonight = Moment().endOf('day').format('YYYY/MM/DD HH:mm:ss').toString();
+
+    console.log(tonight);
+   
+    const { data: bookings, error } = await supabase
+      .from('bookings')
+      .select('id,created_at,start_time,end_time,user(*),resource(*), note')
+      .lt('end_time', endTime)
+      .gte('start_time', startTime)
+      .order('start_time', { ascending: true })
+
+    if (error) console.log('error', error)
+    else {console.log(bookings);
+
+     type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>> 
+      setBookings(bookings)
+    }
+  }
 
 
   const deleteBooking = async (id: number) => {
@@ -63,7 +95,17 @@ export default function ViewAll({ session }: { session: Session }) {
   return (
     <div className="w-full">
       <h1 className="mb-12">Bookings.</h1>
+      <button className={view==='day'?'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded':'bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'} onClick={()=>{setView('day');}}>
+          Day
+        </button>
+        <button className={view==='week'?'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded':'bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'}  onClick={()=>{setView('week');}}>
+          Week
+        </button>
+        <button className={view==='month'?'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded':'bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'}  onClick={()=>{setView('month');}}>
+          Month
+        </button>
       <div className="bg-white shadow overflow-hidden rounded-md">
+       
         <ul>
           {bookings.map((booking) => (
             <Booking key={booking.id} booking={booking} onDelete={() => deleteBooking(booking.id)} />

@@ -40,9 +40,9 @@ export default function MyBookings({ session }: { session: Session }) {
       console.log(user)
       const { data: bookings, error } = await supabase
         .from('bookings')
-        .select('id,created_at,start_time,end_time,user(*),resource(*), note')
+        .select('id,created_at,start_time,end_time,user!inner(*),resource(*), note')
         .eq('user.id', user.id)
-        .order('id', { ascending: true })
+        .order('start_time', { ascending: true })
 
       if (error) console.log('error', error)
       else {console.log(bookings);

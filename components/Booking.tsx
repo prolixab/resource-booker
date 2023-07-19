@@ -41,7 +41,7 @@ export default function Booking({ booking, onDelete }: { booking: Todos; onDelet
     <li className="w-full block cursor-pointer hover:bg-gray-200 focus:outline-none focus:bg-gray-200 transition duration-150 ease-in-out">
       <div className="flex items-center px-4 py-4 sm:px-6">
         <div className="min-w-0 flex-1 flex items-center">
-        <span className="text-sm leading-5 font-medium truncate"> {Moment(booking.start_time).format('d MMM hh:mm')} - {Moment(booking.end_time).format('d MMM hh:mm')} {booking.resource.name} {booking.user.first_name} {booking.user.last_name}</span>
+        <span className="text-sm leading-5 font-medium truncate"> {Moment(booking.start_time).format('ddd DD/MM HH:mm')} - {Moment(booking.end_time).format('ddd DD/MM HH:mm')} {booking.resource.name} {booking.user.first_name} {booking.user.last_name}</span>
 
  {/* <div className="text-sm leading-5 font-medium truncate">{booking.note}</div> */}
 
