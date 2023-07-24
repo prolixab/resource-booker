@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
 import MyBookings from '@/components/my-bookings'
-import Login from '@/components/login'
+import Login from '@/components/Login'
 
 export default function Home() {
   const session = useSession()

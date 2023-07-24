@@ -17,7 +17,7 @@ user:{
 }
 }
 
-export default function Booking({ booking, onDelete }: { booking: Todos; onDelete: () => void }) {
+export default function Booking({ booking, resource, onDelete }: { booking: Todos; resource:Number; onDelete: () => void }) {
   const supabase = useSupabaseClient<Database>()
   const [isCompleted, setIsCompleted] = useState(/*todo.is_complete*/)
 
@@ -47,14 +47,9 @@ export default function Booking({ booking, onDelete }: { booking: Todos; onDelet
 
 
         </div>
-        <div>
-          <input
-            className="cursor-pointer"
-            onChange={(e) => toggle()}
-            type="checkbox"
-            checked={isCompleted ? true : false}
-          />
-        </div>
+        <button data-modal-target="authentication-modal" data-modal-toggle="authentication-modal" className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+  Edit
+</button>
         <button
           onClick={(e) => {
             e.preventDefault()

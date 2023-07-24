@@ -6,7 +6,9 @@ import Datepicker from "tailwind-datepicker-react";
 import DateTimePicker from 'react-tailwindcss-datetimepicker';
 import DateCalendar from "@/components/DateCalendar";
 import Booking from '@/components/Booking'
-import ResourceDropDown from './ResourceDropdown';
+import ResourceDropDown from './ViewAll/ResourceDropdown';
+import CreateBookingModal from './CreateBookingModal/CreateBookingModal'
+import { Button } from 'flowbite-react';
 
 //type Todos = Database['public']['Tables']['bookings']['Row']
 type AltTodo= { created_at: string | null
@@ -22,7 +24,7 @@ user:{
 }
 }
 
-export default function CreateBooking({ session }: { session: Session }) {
+export default function MyBookings({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>()
   const [todos, setTodos] = useState<AltTodo[]>([])
   const [startDate, setStartDate] = useState([])
@@ -32,15 +34,20 @@ export default function CreateBooking({ session }: { session: Session }) {
   const [newTaskText, setNewTaskText] = useState('')
   const [errorText, setErrorText] = useState('')
 
+  const [openModal, setOpenModal] = useState<string | undefined>();
+
+  
   const user = session.user
 
   useEffect(() => {
 
     const fetchBookings = async () => {
+      console.log(user)
       const { data: bookings, error } = await supabase
         .from('bookings')
-        .select('id,created_at,start_time,end_time,user(*),resource(*), note')
-        .order('id', { ascending: true })
+        .select('id,created_at,start_time,end_time,user!inner(*),resource(*), note')
+        .eq('user.id', user?.id)
+        .order('start_time', { ascending: true })
 
       if (error) console.log('error', error)
       else {console.log(bookings);
@@ -82,32 +89,17 @@ export default function CreateBooking({ session }: { session: Session }) {
 
   return (
     <div className="w-full">
-      <h1 className="mb-12">Create Booking</h1>
-      <DateCalendar setterFunction={setStartDate}/>
-      <DateCalendar setterFunction={setEndDate}/>
-    <ResourceDropDown session={session} setSelectedResourceId={setSelectedResourceId}/>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          addBooking(newTaskText)
-        }}
-        className="flex gap-2 my-2"
-      >
-        <input
-          className="rounded w-full p-2"
-          type="text"
-          placeholder="make coffee"
-          value={newTaskText}
-          onChange={(e) => {
-            setErrorText('')
-            setNewTaskText(e.target.value)
-          }}
-        />
-        <button className="btn-black" type="submit">
-          Add
-        </button>
-      </form>
+      <h1 className="mb-12">My Bookings</h1>
       {!!errorText && <Alert text={errorText} />}
+      <div className="bg-white shadow overflow-hidden rounded-md">
+        <ul>
+          {bookings.map((booking) => (
+            <Booking key={booking.id} booking={booking} onDelete={() => deleteBooking(booking.id)} />
+          ))}
+        </ul>
+        <Button onClick={() => setOpenModal('form-elements')}>Toggle modal</Button>
+        <CreateBookingModal session={session} openModal={openModal} setOpenModal={setOpenModal}></CreateBookingModal>
+      </div>
     </div>
   )
 }
