@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import MyBookings from '@/components/my-bookings'
+import MyBookings from '@/components/MyBookings'
 import Login from '@/components/Login'
 
 export default function Home() {

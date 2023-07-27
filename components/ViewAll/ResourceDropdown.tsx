@@ -18,7 +18,8 @@ export default function ResourceDropDown({ session, setSelectedResourceId }: { s
         .order('id', { ascending: true })
 
       if (error) console.log('error', error)
-      else {console.log(resources);
+      else {
+        //console.log(resources);
 
        type ResourceResponse = Awaited<ReturnType<typeof fetchResources>> 
        setResources(resources)

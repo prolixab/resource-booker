@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import TodoList from '@/components/TodoList'
+import ViewAll from '@/components/ViewAll/ViewAll'
 import Login from '@/components/Login'
 
 export default function Home() {
@@ -25,7 +25,7 @@ export default function Home() {
             style={{ minWidth: 250, maxWidth: 600, margin: 'auto' }}
           >
             
-            <TodoList session={session} />
+            <ViewAll session={session} />
           </div>
         )}
       </div>

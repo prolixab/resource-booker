@@ -11,6 +11,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.14.2",
+    "@mui/x-data-grid": "^6.10.1",
+    "@mui/x-date-pickers": "^6.10.1",
     "@next/font": "13.1.6",
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.8",
