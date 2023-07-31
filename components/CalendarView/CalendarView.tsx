@@ -5,10 +5,16 @@ import Moment from 'moment';
 import Booking from '@/components/ViewAll/Booking'
 import ResourceDropDown from './ResourceDropdown';
 import CreateBookingModal from '../CreateBookingModal/CreateBookingModal'
+
 import { Button,Label } from 'flowbite-react';
 import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 import DateViewChooser from './DateViewChooser'
 import MessageToast  from '@/components/MessageToast';
+import Calendar from '@/components/Calendar'
+import { ToastContainer, toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+
 
 //type Todos = Database['public']['Tables']['bookings']['Row']
 type AltTodo= { created_at: string | null
@@ -35,8 +41,8 @@ const columns: GridColDef[] = [
 export default function ViewAll({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>()
   const [todos, setTodos] = useState<AltTodo[]>([])
-  const [startDate, setStartDate] = useState([])
-  const [endDate, setEndDate] = useState([])
+  const [startDate, setStartDate] = useState(Moment())
+  const [endDate, setEndDate] = useState(Moment())
   const [selectedResourceId, setSelectedResourceId] = useState<Number>(-1)
   const [bookings, setBookings] = useState<AltTodo[]>([])
   const [mappedBookings,setMappedBookings]= useState<GridRowsProp>([]);
@@ -47,6 +53,7 @@ export default function ViewAll({ session }: { session: Session }) {
   const [toastText,setToastText]=useState("");
   const [showToast,setShowToast]=useState(false);
   const [loading,setLoading]=useState(true);
+
 
   const [openModal, setOpenModal] = useState<string | undefined>();
 
@@ -105,8 +112,8 @@ export default function ViewAll({ session }: { session: Session }) {
     const { data: bookings, error } = await supabase
       .from('bookings')
       .select('id,created_at,start_time,end_time,user(*),resource(*), note')
-      .lt('end_time', endTime)
-      .gte('start_time', startTime)
+      // .lt('end_time', endTime)
+      // .gte('start_time', startTime)
       .order('start_time', { ascending: true })
 
     if (error) console.log('error', error)
@@ -130,9 +137,9 @@ export default function ViewAll({ session }: { session: Session }) {
     let provMappedBookings=tempBookings.map((book)=>{ 
     
         return {id:book.id,
-          start_time:book.start_time,
-          end_time:book.end_time,
-          resource_name:book.resource.name,
+          start:book.start_time,
+          end:book.end_time,
+          title:book.resource.name,
           resource_model:book.resource.model,
           user_name:book.user.first_name+" "+book.user.last_name
           
@@ -147,10 +154,20 @@ export default function ViewAll({ session }: { session: Session }) {
   
 
   const successfullySubmitted = () =>{
-    setToastText("Successfully added booking");
-    setShowToast(true);
+    toast("Booking successfully added.");
     setOpenModal(undefined);
-    fetchBookings();
+    fetchBookings().then((bookings)=>{
+      setBookings(bookings);
+      updateMappedBookingsFilter(bookings,selectedResourceId);
+    }
+    );
+  }
+
+  const handleDateClick=(date)=>{
+    console.log(date);
+     setStartDate(Moment(date.dateStr))
+     setEndDate(Moment(date.dateStr).add(2,"hours"))
+      setOpenModal("create-booking");
   }
 
 
@@ -158,33 +175,25 @@ export default function ViewAll({ session }: { session: Session }) {
     <div className="w-full">
       <h1 className="mb-12">Bookings.</h1>
       <div>
-      <Button onClick={() => setOpenModal('create-booking')}>Create new booking</Button>
+      <Button className="mb-2" onClick={() => setOpenModal('create-booking')}>Create new booking</Button>
       </div>
-        <Button.Group>
-      <Button color="gray" onClick={()=>{setView('day');}}>
-      Day
-      </Button>
-      <Button color="gray" onClick={()=>{setView('week');}}>
-      Week
-      </Button>
-      <Button color="gray" onClick={()=>{setView('month');}}>
-      Month
-      </Button>
-    </Button.Group>
-        <div>
-        <div>
-          <Label htmlFor="resource" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Filter by resource</Label>
-        </div>
-          <ResourceDropDown session={session} setSelectedResourceId={presetSelectedResourceId}/>
-        </div>
-          <DateViewChooser baseDay={baseDay} view={view} setBaseDay={setBaseDay}></DateViewChooser>
    
-      <div className="bg-white shadow overflow-hidden rounded-md">
-        {loading?<p>Loading</p>:<DataGrid selectedResourceId={mappedBookings} rows={mappedBookings} columns={columns} />}
-      </div>
+      <CreateBookingModal session={session} propsStartDate={startDate} propsEndDate={endDate} openModal={openModal} setOpenModal={setOpenModal} successfullySubmitted={successfullySubmitted}></CreateBookingModal>
      
-      <CreateBookingModal session={session} openModal={openModal} setOpenModal={setOpenModal} successfullySubmitted={successfullySubmitted}></CreateBookingModal>
-      <MessageToast toastText={toastText} showToast={showToast} setShowToast={setShowToast}></MessageToast>
+      {/* <MessageToast toastText={toastText} showToast={showToast} setShowToast={setShowToast}></MessageToast> */}
+      <ToastContainer 
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="colored"
+      />
+      <Calendar session={session} events={mappedBookings} handleDateClick={handleDateClick}></Calendar>
     </div>
   )
 }

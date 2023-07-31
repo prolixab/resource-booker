@@ -14,7 +14,7 @@ return(
       fluid
       rounded
     >
-      <Navbar.Brand href="https://flowbite-react.com">
+      <Navbar.Brand href="/">
       <img src="https://flowbite.com/docs/images/logo.svg" className="h-8 mr-3" alt="Flowbite Logo" />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           3DED

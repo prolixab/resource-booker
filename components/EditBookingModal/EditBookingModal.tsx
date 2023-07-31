@@ -25,37 +25,49 @@ user:{
 }
 }
 
-export default function CreateBookingModal({ session,setOpenModal,openModal,successfullySubmitted,propsStartDate,propsEndDate }: { session: Session,setOpenModal:Function,openModal:string,successfullySubmitted:Function,propsStartDate:moment.Moment,propsEndDate:moment.Moment}) {
+export default function CreateBookingModal({ session,bookingId, setOpenModal,openModal,successfullySubmitted,propsStartDate,propsEndDate }: { session: Session, bookingId:string,setOpenModal:Function,openModal:string,successfullySubmitted:Function,propsStartDate:moment.Moment,propsEndDate:moment.Moment}) {
   const supabase = useSupabaseClient<Database>()
-  const [todos, setTodos] = useState<AltTodo[]>([])
   const [startDate, setStartDate] = useState(propsStartDate)
   const [endDate, setEndDate] = useState(propsEndDate)
   const [selectedResourceId, setSelectedResourceId] = useState(-1)
-  const [bookings, setBookings] = useState<AltTodo[]>([])
+  const [booking, setBooking] = useState<AltTodo[]>([])
   const [descriptionText, setDescriptionText] = useState<string>('')
   const [errorText, setErrorText] = useState('')
 
-  const props = { openModal, setOpenModal, session, successfullySubmitted,propsStartDate,propsEndDate };
+  const props = { openModal, setOpenModal, session, successfullySubmitted };
 
   const user = session.user
 
   const ref = useRef(null);
 
   useEffect(() => {
-    ref.current = document.body;
-    console.log("useEffect called");
-    console.log(propsStartDate);
-    console.log(propsEndDate);
-    // console.log(propsStartDate.toDate())
-      setStartDate(props.propsStartDate);
-      setEndDate(props.propsEndDate);
-  }, [supabase,propsStartDate,propsEndDate])
+    ref.current = document.body; 
+    fetchBookings().then((book)=>{
+      setBooking(book);
+    });
+  }, [supabase])
 
   const addBooking = async () => {
 
   if(await runChecks()) {insertBooking();}
   else{
     console.log("Checker returned error");
+  }
+  }
+
+  const fetchBookings = async () => {
+
+    const { data: booking, error } = await supabase
+      .from('bookings')
+      .select('id,created_at,start_time,end_time,user(*),resource(*), note')
+      .eq('id', bookingId)
+     
+    if (error) console.log('error', error)
+    else {
+    
+     type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>> 
+     console.log(booking);
+     return(booking[0])
   }
   }
   
@@ -137,7 +149,7 @@ const handleDescriptionChange=(e)=>{
   return (
   
     <>
-      <Modal root={ref.current || undefined} show={props.openModal === 'create-booking'} size="xl" popup onClose={() => props.setOpenModal(undefined)}>
+      <Modal root={ref.current || undefined} show={props.openModal === 'edit-booking'} size="xl" popup onClose={() => props.setOpenModal(undefined)}>
         <Modal.Header />
         <Modal.Body>
         <form key="create-form"
@@ -148,7 +160,7 @@ const handleDescriptionChange=(e)=>{
       >
         <div className="space-y-6">
 
-            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Create Booking</h3>
+            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Edit Booking</h3>
           
            <div className="mb-2 block">
             <DateTimePicker
@@ -189,7 +201,7 @@ const handleDescriptionChange=(e)=>{
 
             <div className="w-full">
             <Button  type="submit">
-          Add
+          Save
         </Button>
         {!!errorText && <Alert text={errorText} />}
             </div>
