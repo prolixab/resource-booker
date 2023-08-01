@@ -20,14 +20,14 @@ type AltTodo= { created_at: string | null
     }
     }
 
-export default function Calendar({events,handleDateClick,session}:{events:AltTodo[],handleDateClick:Function,session:Session}){
+export default function Calendar({events,handleDateClick,session, successfullySubmitted}:{events:AltTodo[],handleDateClick:Function,session:Session, successfullySubmitted:Function}){
 
 
     const [openModal, setOpenModal] = useState<string | undefined>();
     const [bookingId,setBookingId]=useState();
 
       const handleEventClick = (arg) => { 
-        console.log(arg)
+       // console.log(arg)
         setBookingId(arg.event.id);
         setOpenModal('edit-booking');
       }
@@ -41,8 +41,8 @@ export default function Calendar({events,handleDateClick,session}:{events:AltTod
         weekNumbers={true}
         events={events}
       />
-      <EditBookingModal bookingId={bookingId} session={session}  openModal={openModal} setOpenModal={setOpenModal}></EditBookingModal>
-  {/*successfullySubmitted={successfullySubmitted}*/}
+      <EditBookingModal bookingId={bookingId} session={session}  openModal={openModal} setOpenModal={setOpenModal} successfullySubmitted={successfullySubmitted}></EditBookingModal>
+ 
   </>
       )
 } 

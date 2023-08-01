@@ -193,7 +193,7 @@ export default function ViewAll({ session }: { session: Session }) {
       pauseOnHover
       theme="colored"
       />
-      <Calendar session={session} events={mappedBookings} handleDateClick={handleDateClick}></Calendar>
+      <Calendar session={session} events={mappedBookings} handleDateClick={handleDateClick} successfullySubmitted={successfullySubmitted}>></Calendar>
     </div>
   )
 }
