@@ -1,11 +1,11 @@
-import Head from 'next/head'
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import CreateBooking from '@/components/create-booking'
+import Head from "next/head";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { Auth, ThemeSupa } from "@supabase/auth-ui-react";
+import CreateBooking from "@/components/create-booking";
 
 export default function Home() {
-  const session = useSession()
-  const supabase = useSupabaseClient()
+  const session = useSession();
+  const supabase = useSupabaseClient();
 
   return (
     <>
@@ -23,20 +23,23 @@ export default function Home() {
                 <span className="font-sans text-4xl text-center pb-2 mb-1 border-b mx-4 align-center">
                   Login
                 </span>
-                <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} theme="dark" />
+                <Auth
+                  supabaseClient={supabase}
+                  appearance={{ theme: ThemeSupa }}
+                  theme="dark"
+                />
               </div>
             </div>
           </div>
         ) : (
           <div
             className="w-full h-full flex flex-col justify-center items-center p-4"
-            style={{ minWidth: 250, maxWidth: 600, margin: 'auto' }}
+            style={{ minWidth: 250, maxWidth: 600, margin: "auto" }}
           >
-            
             <CreateBooking session={session} />
           </div>
         )}
       </div>
     </>
-  )
+  );
 }
