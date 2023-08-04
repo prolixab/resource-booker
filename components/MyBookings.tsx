@@ -2,11 +2,7 @@ import { Database } from "@/lib/schema";
 import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import Moment from "moment";
-import Datepicker from "tailwind-datepicker-react";
-import DateTimePicker from "react-tailwindcss-datetimepicker";
-import DateCalendar from "@/components/DateCalendar";
 import Booking from "@/components/Booking";
-import ResourceDropDown from "./ViewAll/ResourceDropdown";
 import CreateBookingModal from "./CreateBookingModal/CreateBookingModal";
 import { Button } from "flowbite-react";
 
@@ -27,10 +23,8 @@ type AltTodo = {
 
 export default function MyBookings({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>();
-  const [todos, setTodos] = useState<AltTodo[]>([]);
   const [startDate, setStartDate] = useState([]);
   const [endDate, setEndDate] = useState([]);
-  const [selectedResourceId, setSelectedResourceId] = useState([]);
   const [bookings, setBookings] = useState<AltTodo[]>([]);
   const [newTaskText, setNewTaskText] = useState("");
   const [errorText, setErrorText] = useState("");
@@ -54,7 +48,7 @@ export default function MyBookings({ session }: { session: Session }) {
       else {
         console.log(bookings);
 
-        type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>>;
+        type BookingsResponse = Awaited<ReturnType<typeof fetchBookings>>;
         setBookings(bookings);
       }
     };
@@ -65,11 +59,11 @@ export default function MyBookings({ session }: { session: Session }) {
   const addBooking = async (taskText: string) => {
     let task = taskText.trim();
     if (task.length) {
-      const { data: todo, error } = await supabase
+      const { data: addedBooking, error } = await supabase
         .from("bookings")
         .insert({
-          start_time: startDate,
-          end_time: endDate,
+          start_time: startDate.toString(),
+          end_time: endDate.toString(),
           resource: 1,
           note: task,
           user: user.id,
@@ -80,7 +74,7 @@ export default function MyBookings({ session }: { session: Session }) {
       if (error) {
         setErrorText(error.message);
       } else {
-        setBookings([...bookings, todo]);
+        setBookings([...bookings, addedBooking]);
         setNewTaskText("");
       }
     }
@@ -116,6 +110,9 @@ export default function MyBookings({ session }: { session: Session }) {
           session={session}
           openModal={openModal}
           setOpenModal={setOpenModal}
+          successfullySubmitted={() => {}}
+          propsStartDate={Moment()}
+          propsEndDate={Moment()}
         ></CreateBookingModal>
       </div>
     </div>

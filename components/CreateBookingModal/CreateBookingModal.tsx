@@ -1,24 +1,18 @@
 import { Database } from "@/lib/schema";
 import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect, useState, useRef } from "react";
-import Moment from "moment";
-import Datepicker from "tailwind-datepicker-react";
-//import DateTimePicker from 'react-tailwindcss-datetimepicker';
-import DateCalendar from "@/components/DateCalendar";
-import Booking from "@/components/Booking";
 import ResourceDropDown from "./ResourceDropdown";
-import { Button, Checkbox, Label, Modal, TextInput } from "flowbite-react";
-import { DatePicker, TimePicker, DateTimePicker } from "@mui/x-date-pickers";
-import { en } from "@supabase/auth-ui-react";
+import { Button, Label, Modal, TextInput } from "flowbite-react";
+import { DateTimePicker } from "@mui/x-date-pickers";
 
 //type Todos = Database['public']['Tables']['bookings']['Row']
 type AltTodo = {
   created_at: string | null;
+  start_time: string;
   end_time: string;
   id: number;
   note: string | null;
   resource: number;
-  start_time: string;
   user: {
     id: number;
     first_name: string;
@@ -36,15 +30,16 @@ export default function CreateBookingModal({
 }: {
   session: Session;
   setOpenModal: Function;
-  openModal: string;
+  openModal: string | undefined;
   successfullySubmitted: Function;
   propsStartDate: moment.Moment;
   propsEndDate: moment.Moment;
 }) {
   const supabase = useSupabaseClient<Database>();
-  const [todos, setTodos] = useState<AltTodo[]>([]);
-  const [startDate, setStartDate] = useState(propsStartDate);
-  const [endDate, setEndDate] = useState(propsEndDate);
+  const [startDate, setStartDate] = useState<moment.Moment | null>(
+    propsStartDate
+  );
+  const [endDate, setEndDate] = useState<moment.Moment | null>(propsEndDate);
   const [selectedResourceId, setSelectedResourceId] = useState(-1);
   const [bookings, setBookings] = useState<AltTodo[]>([]);
   const [descriptionText, setDescriptionText] = useState<string>("");
@@ -82,6 +77,11 @@ export default function CreateBookingModal({
 
     if (selectedResourceId === -1) {
       setErrorText("Please choose a resource.");
+      return false;
+    }
+
+    if (endDate === null) {
+      setErrorText("No end dtae chosen.");
       return false;
     }
 
@@ -124,11 +124,16 @@ export default function CreateBookingModal({
   const insertBooking = async () => {
     let description = descriptionText.trim();
 
-    const { data: todo, error } = await supabase
+    if (startDate === null || endDate === null) {
+      setErrorText("Start date or end date is null");
+      return;
+    }
+
+    const { data: insertedBooking, error } = await supabase
       .from("bookings")
       .insert({
-        start_time: startDate,
-        end_time: endDate,
+        start_time: startDate.toISOString(),
+        end_time: endDate.toISOString(),
         resource: selectedResourceId,
         note: description,
         user: user.id,
@@ -140,14 +145,14 @@ export default function CreateBookingModal({
       setErrorText(error.message);
     } else {
       console.log("Success in adding booking");
-      setBookings([...bookings, todo]);
+      setBookings([...bookings, insertedBooking]);
       setDescriptionText("");
       props.successfullySubmitted();
       props.setOpenModal(undefined);
     }
   };
 
-  const handleDescriptionChange = (e) => {
+  const handleDescriptionChange = (e: any) => {
     setDescriptionText(e.target.value);
   };
 
@@ -194,7 +199,6 @@ export default function CreateBookingModal({
                   <Label htmlFor="resource">Select your resource</Label>
                 </div>
                 <ResourceDropDown
-                  id="resource"
                   session={session}
                   setSelectedResourceId={setSelectedResourceId}
                 />

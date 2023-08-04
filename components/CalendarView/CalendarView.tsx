@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Moment from "moment";
 import CreateBookingModal from "../CreateBookingModal/CreateBookingModal";
 
-import { Button, Label } from "flowbite-react";
+import { Button } from "flowbite-react";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Calendar from "@/components/Calendar";
 import { ToastContainer, toast } from "react-toastify";

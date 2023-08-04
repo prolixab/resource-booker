@@ -9,7 +9,10 @@ type AltTodo = {
   end_time: string;
   id: number;
   note: string | null;
-  resource: number;
+  resource: {
+    id: number;
+    name: string;
+  };
   start_time: string;
   user: {
     id: number;
@@ -23,7 +26,7 @@ export default function Booking({
   resource,
   onDelete,
 }: {
-  booking: Todos;
+  booking: AltTodo;
   resource: Number;
   onDelete: () => void;
 }) {

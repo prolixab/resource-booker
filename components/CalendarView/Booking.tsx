@@ -1,6 +1,5 @@
 import { Database } from "@/lib/schema";
-import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
-import { useEffect, useState } from "react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import Moment from "moment";
 
 //type Todos = Database['public']['Tables']['bookings']['Row']
@@ -9,7 +8,10 @@ type AltTodo = {
   end_time: string;
   id: number;
   note: string | null;
-  resource: number;
+  resource: {
+    id: number;
+    name: string;
+  };
   start_time: string;
   user: {
     id: number;
@@ -23,7 +25,7 @@ export default function Booking({
   resource,
   onDelete,
 }: {
-  booking: Todos;
+  booking: AltTodo;
   resource: Number;
   onDelete: () => void;
 }) {

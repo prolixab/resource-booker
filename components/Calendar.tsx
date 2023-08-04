@@ -1,11 +1,13 @@
 import React from "react";
 import FullCalendar from "@fullcalendar/react";
+import EventInput from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import EditBookingModal from "@/components/EditBookingModal/EditBookingModal";
 import { useState } from "react";
 import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
+import Moment from "moment";
 
 type AltTodo = {
   created_at: string | null;
@@ -27,8 +29,8 @@ export default function Calendar({
   session,
   successfullySubmitted,
 }: {
-  events: AltTodo[];
-  handleDateClick: Function;
+  events: EventInput.EventSourceInput | undefined;
+  handleDateClick: ((arg: any) => void) | undefined;
   session: Session;
   successfullySubmitted: Function;
 }) {
@@ -62,6 +64,8 @@ export default function Calendar({
         openModal={openModal}
         setOpenModal={setOpenModal}
         successfullySubmitted={successfullySubmitted}
+        propsStartDate={Moment()}
+        propsEndDate={Moment()}
       ></EditBookingModal>
     </>
   );

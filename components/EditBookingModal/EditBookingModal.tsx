@@ -38,9 +38,9 @@ export default function EditBookingModal({
   propsEndDate,
 }: {
   session: Session;
-  bookingId: string;
+  bookingId: string | undefined;
   setOpenModal: Function;
-  openModal: string;
+  openModal: string | undefined;
   successfullySubmitted: Function;
   propsStartDate: moment.Moment;
   propsEndDate: moment.Moment;
@@ -86,7 +86,7 @@ export default function EditBookingModal({
 
     if (error) console.log("error", error);
     else {
-      type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>>;
+      type BookingsResponse = Awaited<ReturnType<typeof fetchBooking>>;
       return booking[0];
     }
   };
@@ -138,11 +138,11 @@ export default function EditBookingModal({
   const updateBooking = async () => {
     let description = descriptionText.trim();
 
-    const { data: todo, error } = await supabase
+    const { data: AltTodo, error } = await supabase
       .from("bookings")
       .update({
-        start_time: startDate,
-        end_time: endDate,
+        start_time: startDate.toISOString(),
+        end_time: endDate.toISOString(),
         resource: selectedResourceId,
         note: description,
         user: user.id,
@@ -220,7 +220,7 @@ export default function EditBookingModal({
                   <DateTimePicker
                     label="Start time"
                     value={startDate}
-                    onChange={(newValue) => setStartDate(newValue)}
+                    onChange={(newValue) => setStartDate(newValue!)}
                   />
                 </div>
 
@@ -228,7 +228,7 @@ export default function EditBookingModal({
                   <DateTimePicker
                     label="End time"
                     value={endDate}
-                    onChange={(newValue) => setEndDate(newValue)}
+                    onChange={(newValue) => setEndDate(newValue!)}
                   />
                 </div>
                 <div>
@@ -236,7 +236,6 @@ export default function EditBookingModal({
                     <Label htmlFor="resource">Select your resource</Label>
                   </div>
                   <ResourceDropDown
-                    id="resource"
                     selectedResourceId={selectedResourceId}
                     session={session}
                     setSelectedResourceId={setSelectedResourceId}

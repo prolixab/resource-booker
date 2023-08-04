@@ -216,7 +216,7 @@ export default function ViewAll({ session }: { session: Session }) {
           <p>Loading</p>
         ) : (
           <DataGrid
-            selectedResourceId={mappedBookings}
+            // selectedResourceId={mappedBookings}
             rows={mappedBookings}
             columns={columns}
           />

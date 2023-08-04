@@ -12,7 +12,7 @@ export default function ResourceDropDown({
 }: {
   session: Session;
   setSelectedResourceId: Function;
-  selectedResourceId: Number;
+  selectedResourceId: string | number | readonly string[] | undefined;
 }) {
   const supabase = useSupabaseClient<Database>();
   const [resources, setResources] = useState<Resources[]>([]);
