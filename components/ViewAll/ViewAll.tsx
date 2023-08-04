@@ -8,7 +8,7 @@ import CreateBookingModal from "../CreateBookingModal/CreateBookingModal";
 import { Button, Label } from "flowbite-react";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import DateViewChooser from "./DateViewChooser";
-import MessageToast from "@/components/MessageToast";
+//import MessageToast from "@/components/MessageToast";
 
 //type Todos = Database['public']['Tables']['bookings']['Row']
 type AltTodo = {
@@ -16,7 +16,11 @@ type AltTodo = {
   end_time: string;
   id: number;
   note: string | null;
-  resource: number;
+  resource: {
+    id: number;
+    name: string;
+    model: string;
+  };
   start_time: string;
   user: {
     id: number;
@@ -57,7 +61,7 @@ export default function ViewAll({ session }: { session: Session }) {
     setLoading(true);
     fetchBookings().then((bookings) => {
       console.log(bookings);
-      setBookings(bookings);
+      setBookings(bookings as unknown as AltTodo[]);
       updateMappedBookingsFilter(bookings, selectedResourceId);
       setLoading(false);
     });
@@ -121,7 +125,7 @@ export default function ViewAll({ session }: { session: Session }) {
 
     if (error) console.log("error", error);
     else {
-      type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>>;
+      //type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>>;
       return bookings;
     }
   };
@@ -135,7 +139,7 @@ export default function ViewAll({ session }: { session: Session }) {
 
     console.log(tempBookings);
 
-    let provMappedBookings = tempBookings.map((book) => {
+    let provMappedBookings = tempBookings.map((book: AltTodo) => {
       return {
         id: book.id,
         start_time: book.start_time,
@@ -228,12 +232,14 @@ export default function ViewAll({ session }: { session: Session }) {
         openModal={openModal}
         setOpenModal={setOpenModal}
         successfullySubmitted={successfullySubmitted}
+        propsStartDate={Moment()}
+        propsEndDate={Moment()}
       ></CreateBookingModal>
-      <MessageToast
+      {/* <MessageToast
         toastText={toastText}
         showToast={showToast}
         setShowToast={setShowToast}
-      ></MessageToast>
+      ></MessageToast> */}
     </div>
   );
 }

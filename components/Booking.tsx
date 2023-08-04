@@ -20,11 +20,9 @@ type AltTodo = {
 
 export default function Booking({
   booking,
-  resource,
   onDelete,
 }: {
   booking: AltTodo;
-  resource: Number;
   onDelete: () => void;
 }) {
   return (

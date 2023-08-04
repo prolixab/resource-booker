@@ -3,14 +3,7 @@ import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect, useState, useRef } from "react";
 import Moment from "moment";
 import ResourceDropDown from "./ResourceDropdown";
-import {
-  Button,
-  Checkbox,
-  Label,
-  Modal,
-  TextInput,
-  Spinner,
-} from "flowbite-react";
+import { Button, Label, Modal, TextInput, Spinner } from "flowbite-react";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
 //type Todos = Database['public']['Tables']['bookings']['Row']
@@ -19,7 +12,11 @@ type AltTodo = {
   end_time: string;
   id: number;
   note: string | null;
-  resource: number;
+  resource: {
+    id: number;
+    name: string;
+    model: string;
+  };
   start_time: string;
   user: {
     id: number;
@@ -49,7 +46,7 @@ export default function EditBookingModal({
   const [startDate, setStartDate] = useState(propsStartDate);
   const [endDate, setEndDate] = useState(propsEndDate);
   const [selectedResourceId, setSelectedResourceId] = useState(-1);
-  const [booking, setBooking] = useState<AltTodo[]>([]);
+  const [booking, setBooking] = useState<AltTodo>();
   const [descriptionText, setDescriptionText] = useState<string>("");
   const [errorText, setErrorText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -61,14 +58,14 @@ export default function EditBookingModal({
   const ref = useRef(null);
 
   useEffect(() => {
-    ref.current = document.body;
+    ref.current = document.body as unknown as null;
     if (bookingId) {
       setLoading(true);
       fetchBooking()
         .then((book) => {
           setBooking(book);
-          setSelectedResourceId(book?.resource?.id);
-          setDescriptionText(book?.note);
+          setSelectedResourceId(book?.resource?.id!);
+          setDescriptionText(book?.note as string);
           setStartDate(Moment(book?.start_time));
           setEndDate(Moment(book?.end_time));
         })
@@ -87,7 +84,9 @@ export default function EditBookingModal({
     if (error) console.log("error", error);
     else {
       type BookingsResponse = Awaited<ReturnType<typeof fetchBooking>>;
-      return booking[0];
+      //Convert type to AltTodo
+      let realBooking: AltTodo = booking[0] as unknown as AltTodo;
+      return realBooking;
     }
   };
 
@@ -136,7 +135,7 @@ export default function EditBookingModal({
   };
 
   const updateBooking = async () => {
-    let description = descriptionText.trim();
+    let description = descriptionText!.trim();
 
     const { data: AltTodo, error } = await supabase
       .from("bookings")
@@ -167,7 +166,7 @@ export default function EditBookingModal({
     setLoading(false);
   };
 
-  const handleDescriptionChange = (e) => {
+  const handleDescriptionChange = (e: any) => {
     setDescriptionText(e.target.value);
   };
 

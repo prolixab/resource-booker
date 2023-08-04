@@ -8,6 +8,7 @@ import { Button } from "flowbite-react";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Calendar from "@/components/Calendar";
 import { ToastContainer, toast } from "react-toastify";
+import EventInput from "@fullcalendar/core";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,7 +18,11 @@ type AltTodo = {
   end_time: string;
   id: number;
   note: string | null;
-  resource: number;
+  resource: {
+    id: string;
+    name: string;
+    model: string;
+  };
   start_time: string;
   user: {
     id: number;
@@ -52,7 +57,7 @@ export default function ViewAll({ session }: { session: Session }) {
   useEffect(() => {
     setLoading(true);
     fetchBookings().then((bookings) => {
-      setBookings(bookings);
+      setBookings(bookings!);
       updateMappedBookingsFilter(bookings, selectedResourceId);
       setLoading(false);
     });
@@ -113,18 +118,18 @@ export default function ViewAll({ session }: { session: Session }) {
 
     if (error) console.log("error", error);
     else {
-      type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>>;
-      return bookings;
+      //type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>>;
+      return bookings as unknown as AltTodo[];
     }
   };
 
   const updateMappedBookingsFilter = (bookings, id) => {
-    let tempBookings;
+    let tempBookings: AltTodo[];
 
     if (id == -1) tempBookings = bookings;
     else tempBookings = bookings.filter((book) => book.resource.id == id);
 
-    let provMappedBookings = tempBookings.map((book) => {
+    let provMappedBookings = tempBookings.map((book: AltTodo) => {
       return {
         id: book.id,
         start: book.start_time,
@@ -143,7 +148,7 @@ export default function ViewAll({ session }: { session: Session }) {
     toast("Booking successfully added.");
     setOpenModal(undefined);
     fetchBookings().then((bookings) => {
-      setBookings(bookings);
+      setBookings(bookings!);
       updateMappedBookingsFilter(bookings, selectedResourceId);
     });
   };
@@ -185,7 +190,7 @@ export default function ViewAll({ session }: { session: Session }) {
       />
       <Calendar
         session={session}
-        events={mappedBookings}
+        events={mappedBookings as EventInput.EventSourceInput}
         handleDateClick={handleDateClick}
         successfullySubmitted={successfullySubmitted}
       ></Calendar>

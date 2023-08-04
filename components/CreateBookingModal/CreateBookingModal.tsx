@@ -59,7 +59,7 @@ export default function CreateBookingModal({
   const ref = useRef(null);
 
   useEffect(() => {
-    ref.current = document.body;
+    ref.current = document.body as unknown as null;
     setStartDate(props.propsStartDate);
     setEndDate(props.propsEndDate);
   }, [supabase, propsStartDate, propsEndDate]);

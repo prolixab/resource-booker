@@ -12,7 +12,10 @@ type AltTodo = {
   end_time: string;
   id: number;
   note: string | null;
-  resource: number;
+  resource: {
+    id: number;
+    name: string;
+  };
   start_time: string;
   user: {
     id: number;
@@ -47,9 +50,8 @@ export default function MyBookings({ session }: { session: Session }) {
       if (error) console.log("error", error);
       else {
         console.log(bookings);
-
-        type BookingsResponse = Awaited<ReturnType<typeof fetchBookings>>;
-        setBookings(bookings);
+        //type BookingsResponse = Awaited<ReturnType<typeof fetchBookings>>;
+        setBookings(bookings as unknown as AltTodo[]);
       }
     };
 
@@ -74,7 +76,7 @@ export default function MyBookings({ session }: { session: Session }) {
       if (error) {
         setErrorText(error.message);
       } else {
-        setBookings([...bookings, addedBooking]);
+        setBookings([...bookings, addedBooking as unknown as AltTodo]);
         setNewTaskText("");
       }
     }
