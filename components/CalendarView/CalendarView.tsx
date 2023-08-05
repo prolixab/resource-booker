@@ -3,33 +3,16 @@ import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import Moment from "moment";
 import CreateBookingModal from "../CreateBookingModal/CreateBookingModal";
-
+import ShowBookingModal from "@/components/ShowBookingModal/ShowBookingModal";
+import EditBookingModal from "@/components/EditBookingModal/EditBookingModal";
 import { Button } from "flowbite-react";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Calendar from "@/components/Calendar";
 import { ToastContainer, toast } from "react-toastify";
 import EventInput from "@fullcalendar/core";
+import { Booking } from "@/lib/bookingSchema";
 
 import "react-toastify/dist/ReactToastify.css";
-
-//type Todos = Database['public']['Tables']['bookings']['Row']
-type AltTodo = {
-  created_at: string | null;
-  end_time: string;
-  id: number;
-  note: string | null;
-  resource: {
-    id: string;
-    name: string;
-    model: string;
-  };
-  start_time: string;
-  user: {
-    id: number;
-    first_name: string;
-    last_name: string;
-  };
-};
 
 const columns: GridColDef[] = [
   { field: "start_time", headerName: "Start" },
@@ -44,11 +27,13 @@ export default function ViewAll({ session }: { session: Session }) {
   const [startDate, setStartDate] = useState(Moment());
   const [endDate, setEndDate] = useState(Moment());
   const [selectedResourceId, setSelectedResourceId] = useState<Number>(-1);
-  const [bookings, setBookings] = useState<AltTodo[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [mappedBookings, setMappedBookings] = useState<GridRowsProp>([]);
   const [view, setView] = useState("day");
   const [baseDay, setBaseDay] = useState(Moment());
   const [loading, setLoading] = useState(true);
+  const [bookingId, setBookingId] = useState<string | undefined>();
+  const [booking, setBooking] = useState<Booking>();
 
   const [openModal, setOpenModal] = useState<string | undefined>();
 
@@ -119,17 +104,17 @@ export default function ViewAll({ session }: { session: Session }) {
     if (error) console.log("error", error);
     else {
       //type BookingsResponse = Awaited<ReturnType<typeof fetchTodos>>;
-      return bookings as unknown as AltTodo[];
+      return bookings as unknown as Booking[];
     }
   };
 
   const updateMappedBookingsFilter = (bookings, id) => {
-    let tempBookings: AltTodo[];
+    let tempBookings: Booking[];
 
     if (id == -1) tempBookings = bookings;
     else tempBookings = bookings.filter((book) => book.resource.id == id);
 
-    let provMappedBookings = tempBookings.map((book: AltTodo) => {
+    let provMappedBookings = tempBookings.map((book: Booking) => {
       return {
         id: book.id,
         start: book.start_time,
@@ -160,40 +145,86 @@ export default function ViewAll({ session }: { session: Session }) {
     setOpenModal("create-booking");
   };
 
+  const handleEventClick = (date: any) => {
+    console.log(date);
+    //IF this is the users show edit modal
+    //If this is someone elses show only display modal.
+    let isUsers = false;
+    //find date in bookings
+    let booking = bookings.find((b) => b.id == date.event.id);
+    console.log(user.id);
+    console.log(booking?.user.id);
+    if ((booking?.user.id as unknown as string) == user.id) {
+      isUsers = true;
+    }
+
+    if (isUsers) {
+      console.log("Is users");
+      setBookingId(date.event.id);
+      setOpenModal("edit-booking");
+    } else {
+      setBooking(booking);
+      setBookingId(date.event.id);
+      setOpenModal("show-booking");
+    }
+  };
+
   return (
-    <div className="w-full">
-      <h1 className="mb-12">Bookings.</h1>
-      <div>
-        <Button className="mb-2" onClick={() => setOpenModal("create-booking")}>
-          Create new booking
-        </Button>
+    <>
+      <div className="w-full">
+        <h1 className="mb-12">Bookings.</h1>
+        <div>
+          <Button
+            className="mb-2"
+            onClick={() => setOpenModal("create-booking")}
+          >
+            Create new booking
+          </Button>
+        </div>
+        <CreateBookingModal
+          session={session}
+          propsStartDate={startDate}
+          propsEndDate={endDate}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          successfullySubmitted={successfullySubmitted}
+        ></CreateBookingModal>
+        <ShowBookingModal
+          session={session}
+          booking={booking}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+        ></ShowBookingModal>
+        <EditBookingModal
+          bookingId={bookingId}
+          session={session}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          successfullySubmitted={successfullySubmitted}
+          propsStartDate={Moment()}
+          propsEndDate={Moment()}
+        ></EditBookingModal>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+        <Calendar
+          session={session}
+          bookingId={bookingId}
+          events={mappedBookings as EventInput.EventSourceInput}
+          handleDateClick={handleDateClick}
+          handleEventClick={handleEventClick}
+          successfullySubmitted={successfullySubmitted}
+        ></Calendar>
       </div>
-      <CreateBookingModal
-        session={session}
-        propsStartDate={startDate}
-        propsEndDate={endDate}
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-        successfullySubmitted={successfullySubmitted}
-      ></CreateBookingModal>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
-      <Calendar
-        session={session}
-        events={mappedBookings as EventInput.EventSourceInput}
-        handleDateClick={handleDateClick}
-        successfullySubmitted={successfullySubmitted}
-      ></Calendar>
-    </div>
+    </>
   );
 }

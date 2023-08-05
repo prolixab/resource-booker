@@ -26,23 +26,18 @@ type AltTodo = {
 export default function Calendar({
   events,
   handleDateClick,
+  handleEventClick,
   session,
+  bookingId,
   successfullySubmitted,
 }: {
   events: EventInput.EventSourceInput | undefined;
   handleDateClick: ((arg: any) => void) | undefined;
+  handleEventClick: ((arg: any) => void) | undefined;
+  bookingId: string | undefined;
   session: Session;
   successfullySubmitted: Function;
 }) {
-  const [openModal, setOpenModal] = useState<string | undefined>();
-  const [bookingId, setBookingId] = useState();
-
-  const handleEventClick = (arg) => {
-    // console.log(arg)
-    setBookingId(arg.event.id);
-    setOpenModal("edit-booking");
-  };
-
   return (
     <>
       <FullCalendar
@@ -58,15 +53,6 @@ export default function Calendar({
         weekNumbers={true}
         events={events}
       />
-      <EditBookingModal
-        bookingId={bookingId}
-        session={session}
-        openModal={openModal}
-        setOpenModal={setOpenModal}
-        successfullySubmitted={successfullySubmitted}
-        propsStartDate={Moment()}
-        propsEndDate={Moment()}
-      ></EditBookingModal>
     </>
   );
 }

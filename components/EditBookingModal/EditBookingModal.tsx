@@ -59,6 +59,7 @@ export default function EditBookingModal({
 
   useEffect(() => {
     ref.current = document.body as unknown as null;
+    console.log("Entered useEffect");
     if (bookingId) {
       setLoading(true);
       fetchBooking()
