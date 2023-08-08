@@ -157,7 +157,7 @@ export default function EditBookingModal({
       console.log("Success in editing booking");
 
       clearModal();
-      props.successfullySubmitted();
+      props.successfullySubmitted("Booking successfully updated.");
       props.setOpenModal(undefined);
     }
   };

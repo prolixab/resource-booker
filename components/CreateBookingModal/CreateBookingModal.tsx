@@ -147,7 +147,7 @@ export default function CreateBookingModal({
       console.log("Success in adding booking");
       setBookings([...bookings, insertedBooking]);
       setDescriptionText("");
-      props.successfullySubmitted();
+      props.successfullySubmitted("Booking successfully added.");
       props.setOpenModal(undefined);
     }
   };

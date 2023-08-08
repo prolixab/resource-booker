@@ -5,6 +5,7 @@ import Moment from "moment";
 import CreateBookingModal from "../CreateBookingModal/CreateBookingModal";
 import ShowBookingModal from "@/components/ShowBookingModal/ShowBookingModal";
 import EditBookingModal from "@/components/EditBookingModal/EditBookingModal";
+import EditBookingNoLoadModal from "@/components/EditBookingNoLoadModal/EditBookingNoLoadModal";
 import { Button } from "flowbite-react";
 import { GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Calendar from "@/components/Calendar";
@@ -36,6 +37,12 @@ export default function ViewAll({ session }: { session: Session }) {
   const [booking, setBooking] = useState<Booking>();
 
   const [openModal, setOpenModal] = useState<string | undefined>();
+
+  const updateBooking = (newBooking) => {
+    setBooking((booking) => ({
+      ...newBooking,
+    }));
+  };
 
   const user = session.user;
 
@@ -129,8 +136,8 @@ export default function ViewAll({ session }: { session: Session }) {
     else setMappedBookings(provMappedBookings);
   };
 
-  const successfullySubmitted = () => {
-    toast("Booking successfully added.");
+  const successfullySubmitted = (message: string) => {
+    toast(message);
     setOpenModal(undefined);
     fetchBookings().then((bookings) => {
       setBookings(bookings!);
@@ -160,8 +167,9 @@ export default function ViewAll({ session }: { session: Session }) {
 
     if (isUsers) {
       console.log("Is users");
+      updateBooking(booking);
       setBookingId(date.event.id);
-      setOpenModal("edit-booking");
+      setOpenModal("edit-no-load-booking");
     } else {
       setBooking(booking);
       setBookingId(date.event.id);
@@ -204,6 +212,17 @@ export default function ViewAll({ session }: { session: Session }) {
           propsStartDate={Moment()}
           propsEndDate={Moment()}
         ></EditBookingModal>
+        {booking ? (
+          <EditBookingNoLoadModal
+            session={session}
+            booking={booking}
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            successfullySubmitted={successfullySubmitted}
+          ></EditBookingNoLoadModal>
+        ) : (
+          <></>
+        )}
         <ToastContainer
           position="top-right"
           autoClose={5000}
