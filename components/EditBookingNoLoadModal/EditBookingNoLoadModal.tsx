@@ -36,8 +36,6 @@ export default function EditBookingNoLoadModal({
   const user = session.user;
 
   useEffect(() => {
-    console.log(booking);
-    console.log("Entered no-load");
     //Is booking id same as lcoalbooking id? If not update!
     if (booking.id != localBooking.id) {
       setLocalBooking(booking);
@@ -52,51 +50,6 @@ export default function EditBookingNoLoadModal({
       setErrorText(result.errorText);
       return false;
     } else return true;
-
-    // setErrorText("");
-
-    // if (localBooking.resource.id === -1) {
-    //   setErrorText("Please choose a resource.");
-    //   return false;
-    // }
-
-    // let difference = Moment(localBooking.end_time).diff(
-    //   Moment(localBooking.start_time),
-    //   "hours"
-    // ); // returns difference in seconds
-
-    // if (difference < 0) {
-    //   setErrorText("End time is before start time.");
-    //   return false;
-    // } else if (difference < 1) {
-    //   setErrorText("Minimum booking time is one hour.");
-    //   return false;
-    // } else if (difference > 12) {
-    //   setErrorText("Maximum booking time is 12 hours.");
-    //   return false;
-    // }
-
-    // const { data: todo, error } = await supabase
-    //   .from("bookings")
-    //   .select()
-    //   .eq("resource", localBooking.resource.id);
-    // // .gte('start_time',startDate)
-    // // .lte('end_time',endDate)
-
-    // console.log(todo);
-
-    // if (error) {
-    //   setErrorText("There was an error fetching booking information.");
-    //   return false;
-    // }
-    // if (todo?.length === 0 || todo == null) {
-    //   setErrorText(
-    //     "This resource is already booked during the selected time period."
-    //   );
-    //   return false;
-    // }
-
-    // return true;
   };
 
   const updateBooking = async () => {
