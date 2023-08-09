@@ -19,8 +19,6 @@ export default function ShowBookingModal({
   const supabase = useSupabaseClient<Database>();
   const props = { openModal, setOpenModal, session, booking };
 
-  const user = session.user;
-
   useEffect(() => {}, [supabase]);
 
   return (
